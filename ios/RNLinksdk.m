@@ -222,7 +222,7 @@ RCT_EXPORT_METHOD(create:(NSDictionary*)configuration) {
         self.linkViewController = [[PLKPlaidLinkViewController alloc] initWithConfiguration:linkConfiguration
                                                                               delegate:self.linkViewDelegate];
     }
-    
+
     self.linkViewController.modalPresentationStyle = UIModalPresentationFullScreen;
 }
 
@@ -230,6 +230,15 @@ RCT_EXPORT_METHOD(open:(RCTResponseSenderBlock)callback) {
     if (self.linkViewController) {
         self.completionCallback = callback;
         [RCTPresentedViewController() presentViewController:self.linkViewController animated:YES completion:nil];
+    } else {
+        callback(@[RCTMakeError(@"create was not called", nil, nil)]);
+    }
+}
+
+RCT_EXPORT_METHOD(close:(RCTResponseSenderBlock)callback) {
+    if (self.linkViewController) {
+        __weak typeof(self) weakSelf = self;
+        [weakSelf dismissLinkViewController];
     } else {
         callback(@[RCTMakeError(@"create was not called", nil, nil)]);
     }
